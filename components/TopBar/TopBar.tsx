@@ -80,7 +80,7 @@ export default function TopBar({ session }: { session: any }) {
                         <Avatar className="h-8 w-8 sm:h-9 sm:w-9">
                             <AvatarImage src={session.user?.image ?? ''} />
                             <AvatarFallback className="bg-devon-accent text-gray-700 text-sm">
-                                {getInitials(session.user.name ?? session.user.loginName ?? 'User')}
+                                {getInitials(session.user?.name ?? session.user?.loginName ?? 'User')}
                             </AvatarFallback>
                         </Avatar>
                         <ChevronDown

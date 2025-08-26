@@ -46,8 +46,8 @@ export default function SettingsPage() {
         if (user) {
             setFormData(prev => ({
                 ...prev,
-                name: user.name || '',
-                email: user.email || ''
+                name: user?.name || '',
+                email: user?.email || ''
             }));
         }
     }, [user]);
@@ -182,11 +182,11 @@ export default function SettingsPage() {
                             </div>
                             {user && (
                                 <div className="mt-4 flex flex-wrap gap-2">
-                                    <Badge variant="secondary">ID: {user.userxId}</Badge>
-                                    <Badge variant="secondary">Status: {user.status == 'A' ? 'Ativo' : 'Inativo'}</Badge>
-                                    {user.roles && user.roles.length > 0 && (
+                                    <Badge variant="secondary">ID: {user?.userxId}</Badge>
+                                    <Badge variant="secondary">Status: {user?.status == 'A' ? 'Ativo' : 'Inativo'}</Badge>
+                                    {user?.roles && user?.roles.length > 0 && (
                                         <Badge variant="outline">
-                                            Perfil: {user.roles[0].description}
+                                            Perfil: {user?.roles[0].description}
                                         </Badge>
                                     )}
                                 </div>
@@ -223,8 +223,8 @@ export default function SettingsPage() {
                                         if (user) {
                                             setFormData(prev => ({
                                                 ...prev,
-                                                name: user.name || '',
-                                                email: user.email || ''
+                                                name: user?.name || '',
+                                                email: user?.email || ''
                                             }));
                                         }
                                     }}

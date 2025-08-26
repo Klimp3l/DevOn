@@ -201,15 +201,15 @@ export default function UsersReportsPage() {
                                         {index + 1}
                                     </div>
                                     <div className="flex-1 min-w-0">
-                                        <h3 className="font-medium truncate">{user.name}</h3>
+                                        <h3 className="font-medium truncate">{user?.name}</h3>
                                         <p className="text-sm text-gray-500">
-                                            {user.quizzes} quizzes • {user.responses} respostas
+                                            {user?.quizzes} quizzes • {user?.responses} respostas
                                         </p>
                                     </div>
                                 </div>
                                 <div className="text-right">
                                     <p className="text-sm text-gray-500">Última atividade</p>
-                                    <p className="text-sm font-medium">{user.lastActivity}</p>
+                                    <p className="text-sm font-medium">{user?.lastActivity}</p>
                                 </div>
                             </div>
                         ))}

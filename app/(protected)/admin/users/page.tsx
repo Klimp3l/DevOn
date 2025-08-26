@@ -135,23 +135,23 @@ export default function UsersPage() {
 
                     <div className="space-y-4">
                         {users.map((user) => (
-                            <div key={user.id} className="flex flex-col sm:flex-row sm:items-center justify-between p-4 border rounded-lg hover:bg-gray-50 transition-colors gap-4">
+                            <div key={user?.id} className="flex flex-col sm:flex-row sm:items-center justify-between p-4 border rounded-lg hover:bg-gray-50 transition-colors gap-4">
                                 <div className="flex items-center gap-4 flex-1 min-w-0">
                                     <Avatar className="h-10 w-10 sm:h-12 sm:w-12 flex-shrink-0">
-                                        <AvatarImage src={user.avatar} />
+                                        <AvatarImage src={user?.avatar} />
                                         <AvatarFallback className="bg-quizzer-accent">
-                                            {user.name.split(' ').map(n => n[0]).join('')}
+                                            {user?.name.split(' ').map(n => n[0]).join('')}
                                         </AvatarFallback>
                                     </Avatar>
                                     <div className="flex-1 min-w-0">
-                                        <h3 className="font-medium truncate">{user.name}</h3>
-                                        <p className="text-sm text-gray-500 truncate">{user.email}</p>
+                                        <h3 className="font-medium truncate">{user?.name}</h3>
+                                        <p className="text-sm text-gray-500 truncate">{user?.email}</p>
                                         <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 mt-1">
                                             <span className="text-xs text-gray-400">
-                                                Última atividade: {user.lastActivity}
+                                                Última atividade: {user?.lastActivity}
                                             </span>
-                                            <Badge variant={user.status === 'Online' ? 'outline' : 'secondary'} className="w-fit">
-                                                {user.status}
+                                            <Badge variant={user?.status === 'Online' ? 'outline' : 'secondary'} className="w-fit">
+                                                {user?.status}
                                             </Badge>
                                         </div>
                                     </div>
@@ -160,11 +160,11 @@ export default function UsersPage() {
                                 <div className="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6">
                                     <div className="flex gap-4 sm:gap-6">
                                         <div className="text-center">
-                                            <div className="text-sm font-medium">{user.quizzes}</div>
+                                            <div className="text-sm font-medium">{user?.quizzes}</div>
                                             <div className="text-xs text-gray-500">Quizzes</div>
                                         </div>
                                         <div className="text-center">
-                                            <div className="text-sm font-medium">{user.responses}</div>
+                                            <div className="text-sm font-medium">{user?.responses}</div>
                                             <div className="text-xs text-gray-500">Respostas</div>
                                         </div>
                                     </div>
