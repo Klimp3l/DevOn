@@ -1,5 +1,8 @@
+export const runtime = 'nodejs';
+export const dynamic = 'force-dynamic';
 import { NextRequest, NextResponse } from 'next/server';
 import { cookies, headers as nextHeaders } from 'next/headers';
+import { auth } from '@/auth';
 import { PROXY_CONFIG, isRouteAllowed, getExternalApiUrl, sanitizePath } from '@/lib/config/proxyConfig';
 
 // Função para obter token do header Authorization (client -> proxy)
@@ -17,6 +20,17 @@ async function getTokenFromCookie(): Promise<string | null> {
     const cookieStore = await cookies();
     const token = cookieStore.get('jwt_token')?.value;
     return token || null;
+}
+
+// Token do NextAuth session (server-side)
+async function getTokenFromSession(): Promise<string | null> {
+    try {
+        const session = await auth();
+        const accessToken = (session as any)?.accessToken as string | undefined;
+        return accessToken ?? null;
+    } catch {
+        return null;
+    }
 }
 
 // Função para obter refresh token do cookie
@@ -124,8 +138,8 @@ export async function GET(
             );
         }
 
-        // Obter token do header (se veio do client) ou cookie (fallback)
-        const token = (await getTokenFromRequestHeader()) || (await getTokenFromCookie());
+        // Obter token do header (client), sessão NextAuth (server) ou cookie (fallback legado)
+        const token = (await getTokenFromRequestHeader()) || (await getTokenFromSession()) || (await getTokenFromCookie());
         
         // Preparar headers
         const headers: Record<string, string> = {
@@ -176,7 +190,7 @@ export async function POST(
             );
         }
 
-        const token = (await getTokenFromRequestHeader()) || (await getTokenFromCookie());
+        const token = (await getTokenFromRequestHeader()) || (await getTokenFromSession()) || (await getTokenFromCookie());
         
         // Preparar headers
         const headers: Record<string, string> = {
@@ -227,7 +241,7 @@ export async function PUT(
             );
         }
 
-        const token = (await getTokenFromRequestHeader()) || (await getTokenFromCookie());
+        const token = (await getTokenFromRequestHeader()) || (await getTokenFromSession()) || (await getTokenFromCookie());
         
         // Preparar headers
         const headers: Record<string, string> = {
@@ -278,7 +292,7 @@ export async function DELETE(
             );
         }
 
-        const token = (await getTokenFromRequestHeader()) || (await getTokenFromCookie());
+        const token = (await getTokenFromRequestHeader()) || (await getTokenFromSession()) || (await getTokenFromCookie());
         
         // Preparar headers
         const headers: Record<string, string> = {
@@ -326,8 +340,8 @@ export async function PATCH(
             );
         }
 
-        // Obter token do cookie
-        const token = await getTokenFromCookie();
+        // Obter token do header (client), sessão NextAuth (server) ou cookie (fallback legado)
+        const token = (await getTokenFromRequestHeader()) || (await getTokenFromSession()) || (await getTokenFromCookie());
         
         // Preparar headers
         const headers: Record<string, string> = {

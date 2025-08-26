@@ -108,6 +108,14 @@ export const useMenu = () => {
         return await fetchMenu();
     }, [fetchMenu]);
 
+    // Buscar menu automaticamente no primeiro mount se ainda não existir
+    useEffect(() => {
+        if (!isLoading && (!menu || menu.length === 0)) {
+            // não aguardar para não bloquear render
+            void refreshMenu();
+        }
+    }, [isLoading, menu, refreshMenu]);
+
     // Adicionar rotas sempre disponíveis ao menu e posicionar Dashboard primeiro e Configurações último
     const enhancedMenu = useMemo(() => {
         const defaultDashboard: MenuItem = {

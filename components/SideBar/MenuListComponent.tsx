@@ -10,6 +10,11 @@ export default function MenuListComponent() {
     const { menu, isLoading } = useMenu();
     const { isAuthenticated, isLoading: isAuthLoading } = useAuth();
     const { initializeData } = useApiService();
+    // Inicializar dados no mount (após redirecionamento de login)
+    useEffect(() => {
+        initializeData();
+    }, [initializeData]);
+
     // Inicializar dados automaticamente quando autenticado
     useEffect(() => {
         if (isAuthenticated) {
