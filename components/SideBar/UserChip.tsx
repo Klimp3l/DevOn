@@ -11,7 +11,7 @@ export default function UserChip({ session }: { session: any }) {
         <div className="p-3 sm:p-4 border-t">
             <div className="flex items-center gap-2 sm:gap-3">
                 <Avatar className="h-8 w-8 sm:h-10 sm:w-10">
-                    <AvatarImage src={session.user.image ?? ''} />
+                    <AvatarImage src={session.user?.image ?? ''} />
                     <AvatarFallback className="bg-devon-accent text-gray-700 text-sm">
                         {getInitials(session.user.name ?? session.user.loginName ?? 'User')}
                     </AvatarFallback>

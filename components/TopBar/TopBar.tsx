@@ -78,7 +78,7 @@ export default function TopBar({ session }: { session: any }) {
                         className="flex items-center gap-2 px-2 sm:px-3 py-2 rounded-full hover:bg-gray-100"
                     >
                         <Avatar className="h-8 w-8 sm:h-9 sm:w-9">
-                            <AvatarImage src={session.user.image ?? ''} />
+                            <AvatarImage src={session.user?.image ?? ''} />
                             <AvatarFallback className="bg-devon-accent text-gray-700 text-sm">
                                 {getInitials(session.user.name ?? session.user.loginName ?? 'User')}
                             </AvatarFallback>
