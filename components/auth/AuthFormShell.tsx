@@ -1,26 +1,29 @@
 'use client'
 
+import Link from 'next/link';
+import Image from 'next/image';
+import Form from 'next/form';
+import { Loader2, LogIn, UserPlus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardHeader, CardTitle, CardDescription, CardFooter, CardContent } from '@/components/ui/card';
-import { Loader2, LogIn, UserPlus } from 'lucide-react';
-import Link from 'next/link';
-import Image from "next/image";
-import Form from 'next/form'
-import { usePathname } from 'next/navigation';
-import { useActionState } from 'react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import loginAction from './login/loginAction';
-import registerAction from './register/registerAction';
+import React from 'react';
 
-export default function AuthLayout({
-    children,
-}: {
+type AuthFormShellProps = {
+    isRegister: boolean;
+    state: any;
+    isPending: boolean;
+    formAction: (payload: FormData) => void;
     children: React.ReactNode;
-}) {
-    const pathname = usePathname();
-    const isRegister = pathname.includes('register');
-    const [state, formAction, isPending] = useActionState(isRegister ? registerAction : loginAction, null)
+};
 
+export default function AuthFormShell({
+    isRegister,
+    state,
+    isPending,
+    formAction,
+    children,
+}: AuthFormShellProps) {
     return (
         <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-white to-devon-light p-4">
             <Card className="w-full max-w-md mx-4">
@@ -45,13 +48,11 @@ export default function AuthLayout({
                 </CardHeader>
                 <Form action={formAction} className="w-full">
                     <CardContent className="space-y-4">
-                        {
-                            state?.success === false && (
-                                <Alert variant="destructive" className="mb-2">
-                                    <AlertDescription>{state?.message}</AlertDescription>
-                                </Alert>
-                            )
-                        }
+                        {state?.success === false && (
+                            <Alert variant="destructive" className="mb-2">
+                                <AlertDescription>{state?.message}</AlertDescription>
+                            </Alert>
+                        )}
                         {children}
                     </CardContent>
                     <CardFooter className="flex flex-col space-y-4 mt-4">
@@ -60,7 +61,6 @@ export default function AuthLayout({
                             className="w-full min-h-[44px]"
                             disabled={isPending}
                             onClick={(e) => {
-                                // Garantir que o botão seja clicável no mobile
                                 if (isPending) {
                                     e.preventDefault();
                                     return;
@@ -87,8 +87,7 @@ export default function AuthLayout({
                             )}
                         </Button>
                         <p className="text-center text-sm text-gray-600">
-                            {isRegister ? 'Já tem uma conta?' : 'Não tem uma conta?'}
-                            {' '}
+                            {isRegister ? 'Já tem uma conta?' : 'Não tem uma conta?'}{' '}
                             <Link href={isRegister ? '/login' : '/register'} className="text-devon-green hover:underline font-medium">
                                 {isRegister ? 'Entre aqui' : 'Registre-se'}
                             </Link>
@@ -99,3 +98,5 @@ export default function AuthLayout({
         </div>
     );
 }
+
+
