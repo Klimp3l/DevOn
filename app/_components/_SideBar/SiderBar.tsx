@@ -1,6 +1,6 @@
 'use client'
 
-import UserChip from "@/components/SideBar/UserChip"
+import UserChip from "@/app/_components/_SideBar/UserChip"
 import { Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Session } from "next-auth";

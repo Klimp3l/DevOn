@@ -1,9 +1,11 @@
-import NextAuth from "next-auth";
+import NextAuth, { DefaultSession } from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import { signInSchema } from "@/lib/zod";
 import { jwtDecode } from "jwt-decode";
+import { JWT } from "next-auth/jwt"
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
+    debug: true,
     providers: [
         Credentials({
             credentials: {
@@ -22,12 +24,6 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                 }
 
                 try {
-                    // 1. Login na API usando fetch (server-side)
-                    if (!process.env.API_ENDPOINT) {
-                        console.error('API_ENDPOINT não definido no ambiente');
-                        return null;
-                    }
-
                     const loginRes = await fetch(
                         `${process.env.API_ENDPOINT}/auth/login`,
                         {
@@ -45,13 +41,17 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 
                     const { token, refreshToken } = await loginRes.json();
 
+                    console.log('Token:', token);
+                    console.log('Refresh Token:', refreshToken);
+
                     if (!token) {
                         console.error('Token não recebido da API');
                         return null;
                     }
 
                     // 2. Decodifica o token para obter dados do JWT
-                    const tokenDecoded = jwtDecode<{ userxId: number; exp?: number }>(token);
+                    const tokenDecoded = jwtDecode<{ userxId: number; exp: number }>(token);
+                    const accessTokenExpiresAt = tokenDecoded.exp * 1000;
 
                     // 3. Buscar dados do usuário usando fetch
                     const userRes = await fetch(
@@ -71,11 +71,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                     }
 
                     const user = await userRes.json();
-
-                    const accessTokenExpiresAt = tokenDecoded?.exp
-                        ? tokenDecoded.exp * 1000
-                        : Date.now() + 15 * 60 * 1000; // fallback: 15min
-
+                    
                     return {
                         ...user,
                         accessToken: token,
@@ -89,91 +85,77 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             },
         }),
     ],
-    session: {
-        strategy: "jwt",
-        maxAge: 30 * 24 * 60 * 60, // 30 days
-        updateAge: 24 * 60 * 60, // 24 hours
-    },
     callbacks: {
         async jwt({ token, user }) {
-            // Na primeira vez (login)
-            if (user) {
-                token.user = user as any;
-                token.accessToken = (user as any).accessToken as string;
-                token.refreshToken = (user as any).refreshToken as string;
-                token.accessTokenExpiresAt = (user as any).accessTokenExpiresAt as number;
+            console.log(user)
+            if (user) { // User is available during sign-in
+              token.accessToken = user.accessToken;
+              token.refreshToken = user.refreshToken;
+              token.accessTokenExpiresAt = user.accessTokenExpiresAt;
+            }
+
+            if (Date.now() < token.accessTokenExpiresAt) {
                 return token;
             }
 
-            // Se ainda não estiver expirado, retornar
-            const accessTokenExpiresAt = (token as any).accessTokenExpiresAt as number | undefined;
-            if (accessTokenExpiresAt && Date.now() < accessTokenExpiresAt - 30_000) {
-                return token;
-            }
+            const data = await fetch(`${process.env.API_ENDPOINT}/auth/refresh`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ refreshToken: token.refreshToken }),
+            });
 
-            // Renovar token usando refreshToken
-            try {
-                const refreshToken = (token as any).refreshToken as string | undefined;
-                if (!refreshToken) return token;
+            const { token: newToken, refreshToken } = await data.json();
 
-                const refreshRes = await fetch(`${process.env.API_ENDPOINT}/auth/refresh`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ refreshToken }),
-                });
+            const tokenDecoded = jwtDecode<{ exp: number }>(newToken);
+            const accessTokenExpiresAt = tokenDecoded.exp * 1000;
 
-                if (!refreshRes.ok) {
-                    console.error('Falha ao renovar token');
-                    return token;
-                }
 
-                const { token: newAccessToken, refreshToken: newRefreshToken } = await refreshRes.json();
-
-                const decoded = jwtDecode<{ exp?: number }>(newAccessToken);
-                const newExpiresAt = decoded?.exp ? decoded.exp * 1000 : Date.now() + 15 * 60 * 1000;
-
-                (token as any).accessToken = newAccessToken;
-                (token as any).refreshToken = newRefreshToken ?? refreshToken;
-                (token as any).accessTokenExpiresAt = newExpiresAt;
-
-                return token;
-            } catch (e) {
-                console.error('Erro ao renovar accessToken:', e);
-                return token;
-            }
+            token.accessToken = newToken;
+            token.accessTokenExpiresAt = accessTokenExpiresAt;
+            token.refreshToken = refreshToken;
+            
+            return token
         },
-        async session({ session, token }) {
-            // Dados do usuário
-            if ((token as any).user) {
-                session.user = {
-                    ...session.user,
-                    ...(token as any).user,
-                } as typeof session.user;
-            }
-
-            // Expor apenas o accessToken e metadados seguros
-            if ((token as any).accessToken) {
-                (session as any).accessToken = (token as any).accessToken as string;
-                (session as any).accessTokenExpiresAt = (token as any).accessTokenExpiresAt as number | undefined;
-            }
-
-            // NUNCA expor refreshToken no client
-            if ((session as any).refreshToken) delete (session as any).refreshToken;
-
-            return session;
+        session({ session, token }) {
+            return {
+                ...session,
+                accessToken: token.accessToken,
+                user: {
+                  ...session.user,
+                },
+              }
         },
         authorized: async ({ auth }) => {
             // Logged in users are authenticated, otherwise redirect to login page
             return !!auth;
-        },
-        async signIn() {
-            // Sem side effects de cookies; NextAuth gerencia cookies httpOnly
-            return true;
-        },
+        }
     },
     pages: {
         signIn: "/login",
         error: "/login",
-    },
-    events: {},
+    }
 });
+
+declare module "next-auth" {
+    interface User {
+        userxId: number;
+        accessToken: string;
+        refreshToken: string;
+        accessTokenExpiresAt: number;
+    }
+
+    interface Session {
+        accessToken: string;
+        user: {
+            userxId: number;
+        }  & DefaultSession["user"]
+    }
+}
+
+declare module "next-auth/jwt" {
+    interface JWT {
+        accessToken: string;
+        refreshToken: string;
+        accessTokenExpiresAt: number;
+    }
+}

@@ -4,7 +4,7 @@ import { useActionState } from 'react';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import loginAction from './loginAction';
-import AuthFormShell from '@/components/auth/AuthFormShell';
+import AuthFormShell from '@/app/_components/_auth/AuthFormShell';
 
 export default function LoginClient() {
     const [state, formAction, isPending] = useActionState(loginAction, null);

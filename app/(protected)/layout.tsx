@@ -1,4 +1,4 @@
-import ProtectedLayoutContent from "@/components/auth/ProtectedLayoutContent";
+import ProtectedLayoutContent from "@/app/_components/_auth/ProtectedLayoutContent";
 
 export default async function RootLayout({
     children,

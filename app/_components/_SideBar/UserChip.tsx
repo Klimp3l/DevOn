@@ -11,14 +11,14 @@ export default function UserChip({ session }: { session: any }) {
         <div className="p-3 sm:p-4 border-t">
             <div className="flex items-center gap-2 sm:gap-3">
                 <Avatar className="h-8 w-8 sm:h-10 sm:w-10">
-                    <AvatarImage src={session.user?.image ?? ''} />
+                    <AvatarImage src={session?.user?.image ?? ''} />
                     <AvatarFallback className="bg-devon-accent text-gray-700 text-sm">
-                        {getInitials(session.user?.name ?? session.user?.loginName ?? 'User')}
+                        {getInitials(session?.user?.name ?? session?.user?.loginName ?? 'User')}
                     </AvatarFallback>
                 </Avatar>
                 <div className="flex-1 min-w-0">
-                    <div className="font-medium truncate text-sm sm:text-base">{session.user?.name || session.user?.loginName}</div>
-                    <div className="text-xs sm:text-sm text-gray-500 truncate">{session.user?.email}</div>
+                    <div className="font-medium truncate text-sm sm:text-base">{session?.user?.name || session?.user?.loginName}</div>
+                    <div className="text-xs sm:text-sm text-gray-500 truncate">{session?.user?.email}</div>
                 </div>
                 <Button
                     variant="ghost"

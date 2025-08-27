@@ -1,8 +1,8 @@
 'use client'
 
-import { getMenuIcon } from "@/lib/menuIcons";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useSidebar } from "@/hooks/useSidebar";
+import { getMenuIconByName } from "@/lib/utils";
 import { ChevronRight } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -11,6 +11,7 @@ import { useState } from "react";
 interface MenuItem {
     label: string;
     url: string;
+    icon?: string;
     children: MenuItem[];
 }
 
@@ -41,8 +42,8 @@ export function MenuItem({ item, expandedItems, setExpandedItems, allMenuItems }
     );
     const isExpanded = expandedItems.has(item.url);
 
-    // Obter o ícone para este item do menu
-    const MenuIcon = getMenuIcon(item.url);
+    // Obter o ícone para este item do menu usando nome vindo da API quando existir
+    const MenuIcon = getMenuIconByName(item.icon);
 
     const handleClick = () => {
         if (hasChildren) {

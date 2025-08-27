@@ -1,7 +1,7 @@
 "use client";
 
-import { KPICard } from "@/components/Dashboard/KPICard";
-import { ChartCard } from "@/components/Dashboard/ChartCard";
+import { KPICard } from "@/app/_components/_Dashboard/KPICard";
+import { ChartCard } from "@/app/_components/_Dashboard/ChartCard";
 import {
   PawPrint,
   TrendingUp,

@@ -1,10 +1,10 @@
 import { auth } from "@/auth";
-import TopBar from "@/components/TopBar/TopBar";
+import TopBar from "@/app/_components/_TopBar/TopBar";
 import { Suspense } from "react";
-import MenuListLoader from "@/components/SideBar/MenuListLoader";
-import MenuListComponent from "@/components/SideBar/MenuListComponent";
+import MenuListLoader from "@/app/_components/_SideBar/MenuListLoader";
+import MenuListComponent from "@/app/_components/_SideBar/MenuListComponent";
 import { Breadcrumb } from "@/components/ui/breadcrumb";
-import SideBar from "@/components/SideBar/SiderBar";
+import SideBar from "@/app/_components/_SideBar/SiderBar";
 import { Session } from "next-auth";
 import { SidebarProvider } from "@/hooks/useSidebar";
 
