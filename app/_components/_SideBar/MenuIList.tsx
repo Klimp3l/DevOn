@@ -6,7 +6,7 @@ import { getMenuIconByName } from "@/lib/utils";
 import { ChevronRight } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState } from "react";
+import { use, useState } from "react";
 
 interface MenuItem {
     label: string;
@@ -167,8 +167,9 @@ export function MenuItem({ item, expandedItems, setExpandedItems, allMenuItems }
 }
 
 
-export default function MenuList({ menu }: { menu: MenuItem[] }) {
+export default function MenuList({ menuPromise }: { menuPromise: Promise<MenuItem[]> }) {
     const [expandedItems, setExpandedItems] = useState<Set<string>>(new Set());
+    const menu = use(menuPromise);
 
     return (
         <nav className="flex-1 p-3 sm:p-4 space-y-4 sm:space-y-6 overflow-y-auto animate-in fade-in-0 slide-in-from-top-4 duration-500">

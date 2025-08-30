@@ -2,11 +2,12 @@ import { auth } from "@/auth";
 import TopBar from "@/app/_components/_TopBar/TopBar";
 import { Suspense } from "react";
 import MenuListLoader from "@/app/_components/_SideBar/MenuListLoader";
-import MenuListComponent from "@/app/_components/_SideBar/MenuListComponent";
 import { Breadcrumb } from "@/components/ui/breadcrumb";
 import SideBar from "@/app/_components/_SideBar/SiderBar";
 import { Session } from "next-auth";
 import { SidebarProvider } from "@/hooks/useSidebar";
+import { getMenu, MenuItem } from "@/app/_components/_SideBar/_data_acces/menu/api";
+import MenuList from "../_SideBar/MenuIList";
 
 export default async function ProtectedLayoutContent({
     children,
@@ -14,6 +15,7 @@ export default async function ProtectedLayoutContent({
     children: React.ReactNode;
 }) {
     const session = await auth();
+    const menuPromise: Promise<MenuItem[]> = getMenu();
 
     return (
         <SidebarProvider>
@@ -21,7 +23,7 @@ export default async function ProtectedLayoutContent({
                 <SideBar session={session as Session}>
                     {/* Navigation */}
                     <Suspense fallback={<MenuListLoader />}>
-                        <MenuListComponent />
+                        <MenuList menuPromise={menuPromise} />
                     </Suspense>
                 </SideBar>
 
