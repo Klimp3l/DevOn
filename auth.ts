@@ -41,9 +41,6 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 
                     const { token, refreshToken } = await loginRes.json();
 
-                    console.log('Token:', token);
-                    console.log('Refresh Token:', refreshToken);
-
                     if (!token) {
                         console.error('Token não recebido da API');
                         return null;
@@ -87,7 +84,6 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     ],
     callbacks: {
         async jwt({ token, user }) {
-            console.log(user)
             if (user) { // User is available during sign-in
               token.accessToken = user.accessToken;
               token.refreshToken = user.refreshToken;
